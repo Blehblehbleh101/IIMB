@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IIMB UGAT Final Sprint Tracker & Study Companion</title>
+
+    <!-- Web App & iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IIMB UGAT Companion">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- App Favicon & Apple Touch Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e293b'/><text x='50' y='65' font-size='50' font-weight='bold' text-anchor='middle' fill='%2310b981'>IIM</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e293b'/><text x='50' y='65' font-size='50' font-weight='bold' text-anchor='middle' fill='%2310b981'>IIM</text></svg>">
+
+    <!-- External Tailwind CSS & Fonts & Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        },
+                        electric: '#3b82f6',
+                        emeraldNeon: '#10b981',
+                        goldAccent: '#f59e0b'
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+        
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .widget-square {
+            width: 320px;
+            height: 320px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Subtle Glow Effects */
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        .glow-blue {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar pb-16 sm:pb-0">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-700 bg-slate-800/90 backdrop-blur sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-br from-blue-600 to-emerald-500 rounded-xl text-white font-black text-xl shadow-lg">
+                    UGAT
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-white flex items-center gap-2">
+                        IIMB Sprint Companion
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emeraldNeon border border-emerald-500/30 font-mono font-bold">PWA</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Target: IIM Bangalore BSc Econ & Data Science</p>
+                </div>
+            </div>
+
+            <!-- Install & View Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Native PWA Install Button -->
+                <button id="pwaInstallBtn" onclick="triggerPWAInstall()" class="hidden px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs rounded-xl flex items-center gap-2 hover:opacity-90 transition glow-emerald">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Install App</span>
+                </button>
+
+                <button onclick="toggleWidgetModal()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs rounded-xl flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-mobile-screen-button text-electric"></i>
+                    <span class="hidden sm:inline">Widget Mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Header Banner with Live Countdown -->
+    <section class="border-b border-slate-800 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="text-center md:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-xs text-electric font-mono mb-1">
+                    <i class="fa-solid fa-fire"></i> 30-Day Intensive Execution Mode
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-white">
+                    IIM Bangalore UG Admission Test 2026
+                </h2>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="bg-slate-900 border border-slate-700 px-4 py-2.5 rounded-2xl flex items-center gap-4 text-center">
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase tracking-widest font-mono block">EXAM COUNTDOWN</span>
+                    <div id="heroCountdown" class="font-mono text-xl sm:text-2xl font-black text-goldAccent tracking-wider mt-0.5">
+                        --d --h --m --s
+                    </div>
+                </div>
+                <div class="p-2.5 bg-goldAccent/10 border border-goldAccent/20 rounded-xl text-goldAccent text-xl animate-pulse">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow space-y-6">
+
+        <!-- iOS Install Banner Instructions (Appears only if on iOS Safari) -->
+        <div id="iosInstallBanner" class="hidden bg-slate-800 border border-electric/40 p-4 rounded-2xl flex items-start gap-3">
+            <div class="p-2.5 bg-electric/20 text-electric rounded-xl text-lg">
+                <i class="fa-solid fa-apple-whole"></i>
+            </div>
+            <div class="flex-1 text-xs text-slate-300">
+                <p class="font-bold text-white mb-1">Install on iPhone / iPad:</p>
+                Tap the <i class="fa-solid fa-share-from-square text-electric"></i> <strong>Share</strong> button in Safari browser, then scroll down and tap <i class="fa-solid fa-square-plus text-emeraldNeon"></i> <strong>Add to Home Screen</strong>.
+            </div>
+            <button onclick="document.getElementById('iosInstallBanner').remove()" class="text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Progress Overview Metric Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            
+            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                    <span class="text-[11px] text-slate-400 font-mono uppercase block">CURRENT STREAK</span>
+                    <div class="flex items-baseline gap-1.5 mt-1">
+                        <span id="streakDisplay" class="text-2xl sm:text-3xl font-black text-emeraldNeon font-mono">0</span>
+                        <span class="text-xs text-slate-400">Days</span>
+                    </div>
+                </div>
+                <div class="p-3 bg-emeraldNeon/10 border border-emeraldNeon/20 rounded-xl text-emeraldNeon text-xl">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                    <span class="text-[11px] text-slate-400 font-mono uppercase block">PLAN COMPLETION</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span id="progressPercent" class="text-2xl sm:text-3xl font-black text-electric font-mono">0%</span>
+                    </div>
+                    <div class="w-20 bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="progressBar" class="bg-electric h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div class="p-3 bg-electric/10 border border-electric/20 rounded-xl text-electric text-xl">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                    <span class="text-[11px] text-slate-400 font-mono uppercase block">SIMTESTS LOGGED</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span id="mocksCount" class="text-2xl sm:text-3xl font-black text-purple-400 font-mono">0 / 7</span>
+                    </div>
+                </div>
+                <div class="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-400 text-xl">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                    <span class="text-[11px] text-slate-400 font-mono uppercase block">TODAY'S TARGET</span>
+                    <div id="todayTopicSummary" class="text-xs font-bold text-white mt-1 line-clamp-1">
+                        Arithmetic & Parajumble
+                    </div>
+                    <span id="todayStatusText" class="text-[10px] text-goldAccent mt-1 block">Pending Completion</span>
+                </div>
+                <div class="p-3 bg-goldAccent/10 border border-goldAccent/20 rounded-xl text-goldAccent text-xl">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-700 space-x-4 font-mono text-xs sm:text-sm">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-2.5 border-b-2 border-electric text-electric font-bold flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check"></i> <span>Daily Checklist</span>
+            </button>
+            <button onclick="switchTab('simtests')" id="tab-simtests" class="py-2.5 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> <span>SimTest Tracker</span>
+            </button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="py-2.5 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-sliders"></i> <span>Install & Sync</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: DAILY DASHBOARD -->
+        <div id="view-dashboard" class="space-y-4">
+            <div class="flex justify-between items-center bg-slate-800 p-3.5 rounded-2xl border border-slate-700">
+                <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emeraldNeon"></i>
+                    Study Plan Checklist (Oct 16 - Nov 15)
+                </h3>
+                <div class="flex gap-1.5 font-mono text-xs">
+                    <button onclick="filterDays('all')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg hover:border-electric transition">All</button>
+                    <button onclick="filterDays('pending')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg hover:border-goldAccent transition">Pending</button>
+                    <button onclick="filterDays('mocks')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg hover:border-purple-400 transition">SimTests</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Schedule Container -->
+            <div id="scheduleContainer" class="space-y-3 max-h-[600px] overflow-y-auto pr-1 custom-scrollbar">
+                <!-- Days Injected via JS -->
+            </div>
+        </div>
+
+        <!-- TAB 2: SIMTEST / MOCK TRACKER -->
+        <div id="view-simtests" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Input Log Form -->
+                <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2 border-b border-slate-700 pb-3">
+                        <i class="fa-solid fa-square-plus text-electric"></i> Log SimTest Score
+                    </h3>
+
+                    <div class="space-y-3 font-mono text-xs">
+                        <div>
+                            <label class="text-slate-400 block mb-1">SELECT SIMTEST SESSION</label>
+                            <select id="simTestSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-electric focus:outline-none">
+                                <option value="Oct 19 SimTest">Oct 19 - SimTest</option>
+                                <option value="Oct 23 SimTest 10">Oct 23 - SimTest 10 (Proctored)</option>
+                                <option value="Oct 27 SimTest">Oct 27 - SimTest</option>
+                                <option value="Oct 31 SimTest">Oct 31 - SimTest</option>
+                                <option value="Nov 04 SimTest">Nov 04 - SimTest</option>
+                                <option value="Nov 08 SimTest/PYP">Nov 08 - SimTest / PYP</option>
+                                <option value="Nov 12 SimTest">Nov 12 - SimTest</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 block mb-1">TOTAL SCORE</label>
+                                <input type="number" id="mockTotalScore" placeholder="e.g. 115" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-electric focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">PERCENTILE %</label>
+                                <input type="number" id="mockPercentile" placeholder="e.g. 96.5" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-electric focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-slate-400 block mb-1">QADI SECTIONAL SCORE (IIMB Cutoff Focus)</label>
+                            <input type="number" id="mockQADIScore" placeholder="e.g. 54" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-electric focus:outline-none">
+                        </div>
+
+                        <button onclick="logSimTestResult()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl uppercase tracking-wider hover:opacity-90 transition">
+                            Save Test Result
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SimTest Analytics & Graph -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl space-y-2">
+                        <span class="text-xs font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-area text-emeraldNeon"></i> Percentile Growth Trajectory
+                        </span>
+                        <div class="h-48">
+                            <canvas id="percentileChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl space-y-3">
+                        <span class="text-xs font-bold text-white block border-b border-slate-700 pb-2">Recorded Test Logs</span>
+                        <div id="simTestHistory" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                            <!-- Injected Mock Records -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: INSTALL & SYNC SETTINGS -->
+        <div id="view-settings" class="hidden space-y-6 max-w-2xl mx-auto">
+            
+            <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2 border-b border-slate-700 pb-3">
+                    <i class="fa-solid fa-mobile-retro text-emeraldNeon"></i> Progressive Web App (PWA) Installation
+                </h3>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    This app can be installed directly onto your home screen or desktop without going through an App Store. It runs completely offline and saves all study logs locally on your device.
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <button id="pwaSettingsInstallBtn" onclick="triggerPWAInstall()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-download"></i> Install Standalone App
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Backup & Restore -->
+            <div class="bg-slate-800 border border-slate-700 p-5 rounded-2xl space-y-4">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2 border-b border-slate-700 pb-3">
+                    <i class="fa-solid fa-database text-electric"></i> Data Sync & Local Storage
+                </h3>
+
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportData()" class="px-4 py-2 bg-slate-900 border border-slate-700 text-white font-mono text-xs rounded-xl hover:border-electric transition">
+                        <i class="fa-solid fa-file-export mr-1"></i> Export JSON Backup
+                    </button>
+                    <button onclick="document.getElementById('importFileInput').click()" class="px-4 py-2 bg-slate-900 border border-slate-700 text-white font-mono text-xs rounded-xl hover:border-emeraldNeon transition">
+                        <i class="fa-solid fa-file-import mr-1"></i> Import JSON Backup
+                    </button>
+                    <input type="file" id="importFileInput" onchange="importData(event)" class="hidden" accept=".json">
+                    <button onclick="resetData()" class="px-4 py-2 bg-slate-900 border border-red-500/40 text-red-400 font-mono text-xs rounded-xl hover:bg-red-500/10 transition">
+                        <i class="fa-solid fa-trash mr-1"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- SQUARE MOBILE WIDGET MODAL PREVIEW -->
+    <div id="widgetModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="relative flex flex-col items-center">
+            
+            <div class="w-full flex justify-between items-center mb-3 max-w-[320px]">
+                <span class="text-xs text-electric font-mono font-bold">
+                    <i class="fa-solid fa-shapes"></i> 1:1 SQUARE WIDGET
+                </span>
+                <button onclick="toggleWidgetModal()" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                    Close
+                </button>
+            </div>
+
+            <!-- 1:1 Square Widget Frame -->
+            <div class="widget-square glass-card rounded-3xl p-4 flex flex-col justify-between border border-slate-600 relative overflow-hidden glow-emerald">
+                
+                <!-- Background Accent Glows -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-blue-600/20 rounded-full blur-xl pointer-events-none"></div>
+
+                <!-- Top Row -->
+                <div class="flex justify-between items-start z-10">
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <span class="px-1.5 py-0.5 bg-blue-600 text-[9px] font-black rounded text-white font-mono">IIMB</span>
+                            <span class="text-[10px] font-bold text-slate-300">UGAT '26</span>
+                        </div>
+                        <div id="widgetStreak" class="text-[11px] text-emeraldNeon font-mono font-bold mt-1">
+                            🔥 0 Day Streak
+                        </div>
+                    </div>
+
+                    <div class="text-right bg-slate-900/80 border border-slate-700 px-2 py-1 rounded-xl">
+                        <span class="text-[8px] text-slate-400 uppercase font-mono block">EXAM IN</span>
+                        <span id="widgetCountdown" class="text-xs font-mono font-bold text-goldAccent">--d --h</span>
+                    </div>
+                </div>
+
+                <!-- Middle Content: Today's Tasks -->
+                <div class="z-10 bg-slate-900/60 border border-slate-700 p-2.5 rounded-2xl space-y-2">
+                    <div class="flex justify-between items-center text-[9px] font-mono text-slate-400 border-b border-slate-800 pb-1">
+                        <span id="widgetTodayDate">TODAY: Oct 16</span>
+                        <span id="widgetProgressPercent" class="text-electric font-bold">0%</span>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="flex items-center gap-2 text-[10px] font-semibold text-slate-200 cursor-pointer">
+                            <input type="checkbox" id="widgetQuantCheck" onchange="toggleWidgetTask('quant')" class="w-3.5 h-3.5 rounded accent-emeraldNeon bg-slate-900">
+                            <span id="widgetQuantText" class="line-clamp-1">Arithmetic</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-[10px] font-semibold text-slate-200 cursor-pointer">
+                            <input type="checkbox" id="widgetVarcCheck" onchange="toggleWidgetTask('varc')" class="w-3.5 h-3.5 rounded accent-electric bg-slate-900">
+                            <span id="widgetVarcText" class="line-clamp-1">Parajumbles</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bottom Badge -->
+                <div class="z-10 flex justify-between items-center text-[9px] font-mono">
+                    <div class="px-2 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg">
+                        IIMB Sprint
+                    </div>
+                    <span class="text-slate-400">Target: High Score</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PWA & Dynamic Script Engine -->
+    <script>
+        // ----------------------------------------------------
+        // 1. INLINE PWA MANIFEST & SERVICE WORKER INJECTION
+        // ----------------------------------------------------
+        (function initPWA() {
+            // Inject Dynamic Web Manifest
+            const manifest = {
+                name: "IIMB UGAT Final Sprint Tracker",
+                short_name: "UGAT Sprint",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e293b'/><text x='50' y='65' font-size='50' font-weight='bold' text-anchor='middle' fill='%2310b981'>IIM</text></svg>",
+                        sizes: "192x192 512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(manifestBlob);
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestURL;
+            document.head.appendChild(link);
+
+            // Inject Inline Offline Service Worker
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'iimb-ugat-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            caches.match(e.request).then((res) => res || fetch(e.request).catch(() => caches.match('./')))
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swCode], { type: 'text/javascript' });
+                const swURL = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration note:', err));
+            }
+        })();
+
+        // ----------------------------------------------------
+        // 2. MASTER SCHEDULE DATA (Oct 16 - Nov 15)
+        // ----------------------------------------------------
+        const schedule = [
+            { date: "Oct 16", quant: "Arithmetic", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Oct 17", quant: "Arithmetic", varc: "Grammar", isMock: false },
+            { date: "Oct 18", quant: "Arithmetic", varc: "Reading Comprehension", isMock: false },
+            { date: "Oct 19", quant: "SimTest Day", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Oct 20", quant: "Calculation based DI", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Oct 21", quant: "Quadratic, Higher Order, Inequalities", varc: "Grammar", isMock: false },
+            { date: "Oct 22", quant: "Quadratic, Higher Order, Inequalities", varc: "Reading Comprehension", isMock: false },
+            { date: "Oct 23", quant: "SimTest 10 (Proctored)", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Oct 24", quant: "Games and Tournament", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Oct 25", quant: "Puzzles & Arrangement", varc: "Grammar", isMock: false },
+            { date: "Oct 26", quant: "Calculation based DI", varc: "Reading Comprehension", isMock: false },
+            { date: "Oct 27", quant: "SimTest Day", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Oct 28", quant: "Miscellaneous LR", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Oct 29", quant: "Functions and Graph", varc: "Grammar", isMock: false },
+            { date: "Oct 30", quant: "Relations", varc: "Reading Comprehension", isMock: false },
+            { date: "Oct 31", quant: "SimTest Day", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Nov 01", quant: "PnC, Probability", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Nov 02", quant: "Progression", varc: "Grammar", isMock: false },
+            { date: "Nov 03", quant: "Set Theory and Matrices", varc: "Reading Comprehension", isMock: false },
+            { date: "Nov 04", quant: "SimTest Day", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Nov 05", quant: "Geometry & DI", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Nov 06", quant: "Geometry & DI", varc: "Grammar", isMock: false },
+            { date: "Nov 07", quant: "Geometry & DI", varc: "Reading Comprehension", isMock: false },
+            { date: "Nov 08", quant: "SimTest / PYP", varc: "Idioms, Vocabulary", isMock: true },
+            { date: "Nov 09", quant: "Limits & Discontinuity", varc: "Parajumble, Out of context", isMock: false },
+            { date: "Nov 10", quant: "Clocks and Calendar", varc: "Grammar", isMock: false },
+            { date: "Nov 11", quant: "Free Practice / Sectionals", varc: "Reading Comprehension", isMock: false },
+            { date: "Nov 12", quant: "SimTest Day", varc: "Final Review", isMock: true },
+            { date: "Nov 13", quant: "Revise Quant Formula", varc: "Revise Vocabulary and Idioms", isMock: false },
+            { date: "Nov 14", quant: "Practice Calculation", varc: "Revise Vocabulary and Idioms", isMock: false },
+            { date: "Nov 15", quant: "🔥 D-DAY: IIMB UGAT EXAM", varc: "EXECUTE WITH CONFIDENCE", isMock: false, isDDay: true }
+        ];
+
+        // Application State
+        let appState = {
+            checkins: {}, // { "Oct 16": { quant: false, varc: false, mock: false } }
+            simTestLogs: {} // { "Oct 19 SimTest": { score: 110, percentile: 96, qadi: 52 } }
+        };
+
+        let deferredPrompt = null;
+        let chartInstance = null;
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            renderSchedule('all');
+            renderSimTestHistory();
+            updateMetrics();
+            initCountdown();
+            initChart();
+            detectDeviceAndPWA();
+        });
+
+        // ----------------------------------------------------
+        // 3. PWA INSTALL EVENT HANDLERS
+        // ----------------------------------------------------
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show install buttons
+            document.getElementById('pwaInstallBtn').classList.remove('hidden');
+        });
+
+        function triggerPWAInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        document.getElementById('pwaInstallBtn').classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert("PWA Installation is supported natively in Chrome, Edge, or Android browsers. On iOS Safari, tap Share -> Add to Home Screen.");
+            }
+        }
+
+        function detectDeviceAndPWA() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+            
+            if (isIOS && !isStandalone) {
+                document.getElementById('iosInstallBanner').classList.remove('hidden');
+            }
+        }
+
+        // ----------------------------------------------------
+        // 4. DATA PERSISTENCE & METRICS
+        // ----------------------------------------------------
+        function loadSavedData() {
+            const saved = localStorage.getItem('iimb_pwa_app_data');
+            if (saved) {
+                try { appState = JSON.parse(saved); } catch(e) { console.error(e); }
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('iimb_pwa_app_data', JSON.stringify(appState));
+            updateMetrics();
+            updateWidgetView();
+            if (chartInstance) updateChart();
+        }
+
+        function updateMetrics() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+            let streak = 0;
+            let mockCount = 0;
+
+            schedule.forEach(item => {
+                const day = appState.checkins[item.date];
+                const weight = item.isMock ? 3 : 2;
+                totalTasks += weight;
+
+                let done = 0;
+                if (day?.quant) done++;
+                if (day?.varc) done++;
+                if (item.isMock && day?.mock) done++;
+
+                completedTasks += done;
+
+                if (done === weight) streak++;
+                if (item.isMock && day?.mock) mockCount++;
+            });
+
+            const percent = Math.round((completedTasks / totalTasks) * 100) || 0;
+
+            document.getElementById('streakDisplay').innerText = streak;
+            document.getElementById('progressPercent').innerText = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('mocksCount').innerText = `${mockCount} / 7`;
+
+            // Today's summary status
+            const todayState = appState.checkins["Oct 16"];
+            if (todayState?.quant && todayState?.varc) {
+                document.getElementById('todayStatusText').innerText = "✅ Done for Today!";
+                document.getElementById('todayStatusText').className = "text-[10px] text-emeraldNeon mt-1 block font-bold";
+            }
+        }
+
+        // ----------------------------------------------------
+        // 5. RENDER SCHEDULE & TASKS
+        // ----------------------------------------------------
+        function renderSchedule(filter) {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '';
+
+            schedule.forEach((item, idx) => {
+                const dayState = appState.checkins[item.date] || { quant: false, varc: false, mock: false };
+                const isFullyCompleted = dayState.quant && dayState.varc && (!item.isMock || dayState.mock);
+
+                if (filter === 'pending' && isFullyCompleted) return;
+                if (filter === 'mocks' && !item.isMock) return;
+
+                const cardStyle = item.isDDay
+                    ? 'border-2 border-red-500 bg-red-950/20'
+                    : item.isMock
+                        ? 'border-l-4 border-l-purple-500 bg-slate-800 border-slate-700'
+                        : 'bg-slate-800 border-slate-700';
+
+                container.innerHTML += `
+                    <div class="p-3.5 rounded-2xl border ${cardStyle} transition hover:border-slate-500">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-center font-mono px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700 min-w-[65px]">
+                                    <span class="text-[9px] text-slate-400 block">DAY ${idx + 1}</span>
+                                    <span class="text-xs font-bold text-white">${item.date}</span>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-white text-xs sm:text-sm">${item.quant}</h4>
+                                        ${item.isMock ? `<span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[9px] px-1.5 py-0.5 rounded uppercase font-mono font-bold">SIMTEST</span>` : ''}
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-book text-electric mr-1"></i> VARC: ${item.varc}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 self-start sm:self-auto">
+                                <label class="flex items-center gap-1.5 text-xs text-slate-300 font-mono cursor-pointer">
+                                    <input type="checkbox" onchange="toggleTask('${item.date}', 'quant')" ${dayState.quant ? 'checked' : ''} class="w-3.5 h-3.5 rounded accent-emeraldNeon bg-slate-900">
+                                    <span>Quant</span>
+                                </label>
+                                <label class="flex items-center gap-1.5 text-xs text-slate-300 font-mono cursor-pointer">
+                                    <input type="checkbox" onchange="toggleTask('${item.date}', 'varc')" ${dayState.varc ? 'checked' : ''} class="w-3.5 h-3.5 rounded accent-electric bg-slate-900">
+                                    <span>VARC</span>
+                                </label>
+                                ${item.isMock ? `
+                                <label class="flex items-center gap-1.5 text-xs text-purple-400 font-mono cursor-pointer">
+                                    <input type="checkbox" onchange="toggleTask('${item.date}', 'mock')" ${dayState.mock ? 'checked' : ''} class="w-3.5 h-3.5 rounded accent-purple-500 bg-slate-900">
+                                    <span>Analysis</span>
+                                </label>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterDays(type) {
+            renderSchedule(type);
+        }
+
+        function toggleTask(date, type) {
+            if (!appState.checkins[date]) {
+                appState.checkins[date] = { quant: false, varc: false, mock: false };
+            }
+            appState.checkins[date][type] = !appState.checkins[date][type];
+            saveData();
+            renderSchedule('all');
+        }
+
+        // ----------------------------------------------------
+        // 6. SIMTEST LOGGING & CHARTING
+        // ----------------------------------------------------
+        function logSimTestResult() {
+            const mock = document.getElementById('simTestSelect').value;
+            const score = parseFloat(document.getElementById('mockTotalScore').value) || 0;
+            const percentile = parseFloat(document.getElementById('mockPercentile').value) || 0;
+            const qadi = parseFloat(document.getElementById('mockQADIScore').value) || 0;
+
+            appState.simTestLogs[mock] = { score, percentile, qadi };
+            saveData();
+            renderSimTestHistory();
+
+            document.getElementById('mockTotalScore').value = '';
+            document.getElementById('mockPercentile').value = '';
+            document.getElementById('mockQADIScore').value = '';
+        }
+
+        function renderSimTestHistory() {
+            const container = document.getElementById('simTestHistory');
+            container.innerHTML = '';
+
+            const keys = Object.keys(appState.simTestLogs);
+            if (keys.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic">No SimTests recorded yet.</p>`;
+                return;
+            }
+
+            keys.forEach(k => {
+                const log = appState.simTestLogs[k];
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs font-mono">
+                        <div>
+                            <span class="text-white font-bold block">${k}</span>
+                            <span class="text-[10px] text-slate-400">Total: ${log.score} | QADI Sectional: ${log.qadi}</span>
+                        </div>
+                        <span class="text-emeraldNeon font-bold">${log.percentile}%ile</span>
+                    </div>
+                `;
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('percentileChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: getChartConfig(),
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 50, max: 100, grid: { color: '#334155' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function getChartConfig() {
+            const labels = ["Oct 19 SimTest", "Oct 23 SimTest 10", "Oct 27 SimTest", "Oct 31 SimTest", "Nov 04 SimTest", "Nov 08 SimTest/PYP", "Nov 12 SimTest"];
+            const points = labels.map(l => appState.simTestLogs[l] ? appState.simTestLogs[l].percentile : null);
+
+            return {
+                labels: labels.map(l => l.replace(' SimTest', '')),
+                datasets: [{
+                    data: points,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            };
+        }
+
+        function updateChart() {
+            if (chartInstance) {
+                chartInstance.data = getChartConfig();
+                chartInstance.update();
+            }
+        }
+
+        // ----------------------------------------------------
+        // 7. VIEWS, WIDGETS & COUNTDOWN
+        // ----------------------------------------------------
+        function switchTab(tab) {
+            ['dashboard', 'simtests', 'settings'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = 'py-2.5 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2';
+            });
+
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = 'py-2.5 border-b-2 border-electric text-electric font-bold flex items-center gap-2';
+        }
+
+        function toggleWidgetModal() {
+            const modal = document.getElementById('widgetModal');
+            modal.classList.toggle('hidden');
+            updateWidgetView();
+        }
+
+        function updateWidgetView() {
+            const todayDate = "Oct 16";
+            const todayData = schedule.find(s => s.date === todayDate);
+            const todayState = appState.checkins[todayDate] || { quant: false, varc: false };
+
+            document.getElementById('widgetTodayDate').innerText = `TODAY: ${todayDate}`;
+            document.getElementById('widgetQuantText').innerText = todayData.quant;
+            document.getElementById('widgetVarcText').innerText = todayData.varc;
+
+            document.getElementById('widgetQuantCheck').checked = todayState.quant;
+            document.getElementById('widgetVarcCheck').checked = todayState.varc;
+
+            document.getElementById('widgetStreak').innerText = `🔥 ${document.getElementById('streakDisplay').innerText} Day Streak`;
+            document.getElementById('widgetProgressPercent').innerText = document.getElementById('progressPercent').innerText;
+        }
+
+        function toggleWidgetTask(type) {
+            toggleTask("Oct 16", type);
+            updateWidgetView();
+        }
+
+        function initCountdown() {
+            const target = new Date("November 15, 2026 09:00:00").getTime();
+
+            function tick() {
+                const now = new Date().getTime();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    document.getElementById('heroCountdown').innerText = "EXAM TODAY!";
+                    document.getElementById('widgetCountdown').innerText = "D-DAY!";
+                    return;
+                }
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('heroCountdown').innerText = `${d}d ${h}h ${m}m ${s}s`;
+                document.getElementById('widgetCountdown').innerText = `${d}d ${h}h`;
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        // Data Import / Export
+        function exportData() {
+            const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `IIMB_UGAT_Sprint_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    appState = JSON.parse(event.target.result);
+                    saveData();
+                    renderSchedule('all');
+                    renderSimTestHistory();
+                    alert("Backup restored successfully!");
+                } catch (err) {
+                    alert("Invalid JSON backup file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetData() {
+            if (confirm("Are you sure you want to clear all your check-ins and mock records?")) {
+                localStorage.removeItem('iimb_pwa_app_data');
+                appState = { checkins: {}, simTestLogs: {} };
+                saveData();
+                renderSchedule('all');
+                renderSimTestHistory();
+            }
+        }
+    </script>
+</body>
+</html>
